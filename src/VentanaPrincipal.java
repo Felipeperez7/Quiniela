@@ -1,20 +1,57 @@
+
+import java.util.Random;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Felipe
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
 
+    private final DefaultListModel modeloPartidos;
+    private final DefaultListModel modeloResultados;
+
     /**
      * Creates new form VentanaPrincipal
      */
     public VentanaPrincipal() {
         initComponents();
+        modeloPartidos = new DefaultListModel();
+        modeloResultados = new DefaultListModel();
+        jlPartidos.setModel(modeloPartidos);
+        jlResultados.setModel(modeloResultados);
+
+    }
+    
+    /**
+     * Este metodo genera un resultado aleatorio
+     * @return resultado del partido
+     */
+    private char getResultadoPartido() 
+    {
+        Random aleatorio = new Random();
+        int n = aleatorio.nextInt(3);
+        char resultado = '\0';
+        switch (n)
+        {
+            case 0:
+                resultado = '1';
+                break;
+            case 1:
+                resultado = 'X';
+                break;
+            case 2:
+                resultado = '2';
+                break;
+        }
+        return resultado;
     }
 
     /**
@@ -63,6 +100,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         pCentro.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pCentro.setLayout(new java.awt.GridLayout());
 
+        jlPartidos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "asdfasdf", "asdfasdf", "asdfsdf" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
         jScrollPane1.setViewportView(jlPartidos);
 
         pCentro.add(jScrollPane1);
@@ -105,6 +147,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         pCentro.add(pCCentro);
 
+        jlResultados.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "asdfasdf", "asdfasdf" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
         jScrollPane2.setViewportView(jlResultados);
 
         pCentro.add(jScrollPane2);
@@ -119,7 +166,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * @param evt abre una ventana nueva y añade un partido
      */
     private void bNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNuevoActionPerformed
-        // TODO add your handling code here:
+        final String respuesta = (String) JOptionPane.showInputDialog(
+                this,
+                "Partido",
+                "Agregar un partido",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                null);
+
+        modeloPartidos.addElement(respuesta);
     }//GEN-LAST:event_bNuevoActionPerformed
 
     /**
@@ -127,15 +183,28 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * @param evt elimina un partido de la lista partidos
      */
     private void bEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEliminarActionPerformed
-        // TODO add your handling code here:
+        int elemento = jlPartidos.getSelectedIndex();
+        if (elemento >= 0) 
+            modeloPartidos.remove(elemento);
+        else 
+        {
+            JOptionPane.showMessageDialog(this, "No hay elementos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_bEliminarActionPerformed
 
     /**
-     * El botón Realizar quiniela sirve para rellenar la quiniela y pasar los partidos a la lista resultados
-     * @param evt rellena la quiniela y pasar los partidos a la lista resultados
+     * El botón Realizar quiniela rellena la quieniela en la lista Resultados
+     * @param evt rellena la quiniela en la lista resultados
      */
     private void bRealizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRealizarActionPerformed
-        // TODO add your handling code here:
+        // Limpiamos si hay resultados existentes
+        modeloResultados.clear();
+        // Calculamos nuevos resultados
+        for (int i = 0; i < modeloPartidos.size(); i++) 
+        {
+            String elementoPartido = ((String) modeloPartidos.get(i)) + " -> " + getResultadoPartido();
+            modeloResultados.addElement(elementoPartido);
+        }
     }//GEN-LAST:event_bRealizarActionPerformed
 
     /**
@@ -143,7 +212,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * @param evt limpia las dos listas
      */
     private void bResetearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bResetearActionPerformed
-        // TODO add your handling code here:
+        modeloPartidos.clear();
+        modeloResultados.clear();
     }//GEN-LAST:event_bResetearActionPerformed
 
     /**
